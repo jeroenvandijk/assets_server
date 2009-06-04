@@ -1,19 +1,15 @@
-$: << File.dirname(__FILE__) + '/../lib'
-# This file is copied to ~/spec when you run 'ruby script/generate rspec'
-# from the project root directory.
 ENV["RAILS_ENV"] = "test"
 require 'rubygems'
-%w[spec rails/version active_record].each &method(:require)
-#%w[spec rails/version action_pack active_record
-#   action_controller action_controller/test_process action_controller/integration].each &method(:require)
+require 'spec'
+require 'sass'
 
-require 'assets_serve'
-# require 'rails_generator/scripts/generate'
-# require 'rails_generator/scripts/destroy'
-# require 'active_support'
+$: << File.dirname(__FILE__) + '/../lib'
 
-# %w[spec dm]+.each &method(:require)
+require 'assets_server'
+
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
 end
+
+RAILS_ROOT = File.expand_path(File.dirname(__FILE__) + '/../' )

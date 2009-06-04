@@ -1,7 +1,5 @@
 module AssetsServer
 
-  private 
-  
   def render_asset(path, type_sym, options)
     type = type_sym.to_s
     
@@ -16,8 +14,7 @@ module AssetsServer
   end
   
   def render_asset_inline(template_path, type, options = {})
-    template_path += ".erb" if asset_exists?(template_path + ".erb")
-
+    # template_path += ".erb" if asset_exists?(template_path + ".erb")
     inline_asset = render_file(template_path)
     parsed_asset = (type == 'css' ? render_css_or_sass(inline_asset, template_path) : inline_asset)
 
@@ -42,18 +39,21 @@ module AssetsServer
   end
   
   def find_template(path, type)
-    return path if asset_exists?(path + ".#{type}")
+    extensions = [".#{type}"]
+    extensions << ".sass" if type == "css"
     
-    case type
-    when 'css' : return path + ".sass" if asset_exists?(path + ".sass" )
+    extensions.each do |ext|
+      path_with_ext = path + ext
+      
+      return path_with_ext if asset_exists?(path_with_ext)
+      return path_with_ext + ".erb" if asset_exists?(path_with_ext + ".erb")
     end
     
-    return nil
+    nil
   end
 
   def asset_exists?(path_without_extension)
-    path = absolute_path(path_without_extension)
-    FileTest.exists?(path) || FileTest.exists?(path + ".erb")
+    FileTest.exists?(absolute_path(path_without_extension))
   end
 
   def render_file(relative_path)
@@ -63,7 +63,7 @@ module AssetsServer
   end
   
   def render_css_or_sass(inline_asset, path)
-    path.slice(/css/) ? inline_asset : render_sass(inline_asset, path)
+    path.slice(/sass/) ? render_sass(inline_asset, path) : inline_asset 
   end
 
   def render_sass(file_content, path)
@@ -83,7 +83,7 @@ module AssetsServer
 
   def absolute_path(relative_path)
     type = relative_path.slice(/sass|css|js/)  
-    
+
     RAILS_ROOT + "/app#{type_dir(relative_path, type)}"
   end
   
