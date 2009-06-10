@@ -29,7 +29,7 @@ module AssetsServer
   end
   
   def render_asset_tag(path, type)
-    timestamp = "?" + Time.now.to_i.to_s if RAILS_ENV =="development"
+    timestamp = "?" + Time.now.to_i.to_s if RAILS_ENV =="development" # REVIEW Necessary?
     relative_dir = File.join(assets_dir, path + ".#{type}#{timestamp}")
     
     case type
@@ -68,9 +68,12 @@ module AssetsServer
 
   def render_sass(file_content, path)
     indention = "  "
-    nested_file_content = "#{namespace(path)}\n"
+    
+    nested_file_content = ""
+    nested_file_content << "@import partials/base.sass\n" if FileTest.exists?(File.join(RAILS_ROOT, "app", assets_dir, "stylesheets", "application", "partials/_base.sass")) # TODO Remove magic variables
+    nested_file_content << "#{namespace(path)}\n"
     nested_file_content << indention << file_content.gsub("\n", "\n#{indention}")
-    Sass::Engine.new( nested_file_content ).render    
+    Sass::Engine.new( nested_file_content, Sass::Plugin.options).render    
   end
 
   def namespace(path)

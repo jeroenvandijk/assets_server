@@ -3,7 +3,6 @@ class AssetsController < ApplicationController
   
   def serve
     path = params[:path]
-
     response = lambda { |format| render :inline => render_asset(path, format, :inline => true)  }
 
     respond_to do |format|

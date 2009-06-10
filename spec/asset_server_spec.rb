@@ -52,7 +52,35 @@ describe "AssetServer" do
     end
   end
   
-  
-  
+  describe "sass" do
+    describe "shared mixins" do
+      require 'sass'
+      module Sass::Plugin
+        class << self
+          attr_accessor :options
+        end
+        self.options = {}
+      end
+
+
+      it "should include shared mixins" do
+        pending
+        load_path = "app/assets/stylesheets/application"
+
+        Sass::Plugin.options[:load_paths] = load_path
+      
+        base_path = File.join(RAILS_ROOT, load_path, "partials/_base.sass")
+        FileTest.expects(:exists?).with(base_path).returns(true)
+
+        File.expects(:open).with(base_path, "r").returns(mock(:read => "=bg\n  :background color"))
+
+        FileTest.expects(:exists?).with("#{path("stylesheets")}.sass").returns(true)
+        File.expects(:open).returns(mock(:read => ".test\n  +bg"))
+        subject.render_asset("users/monkey", :css, :inline => true)#.should eql "html#users-monkey .test {\n  background-color: color; }\n"
+      end
+
+      
+    end
+  end
   
 end

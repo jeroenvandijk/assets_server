@@ -2,6 +2,7 @@ ENV["RAILS_ENV"] = "test"
 require 'rubygems'
 require 'spec'
 require 'sass'
+require 'sass/plugin'
 
 $: << File.dirname(__FILE__) + '/../lib'
 
